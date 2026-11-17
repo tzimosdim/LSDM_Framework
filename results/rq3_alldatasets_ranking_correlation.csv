@@ -1,0 +1,25 @@
+Dataset,Model,Pearson_rho,nDCG@3,nDCG@5,nDCG@10,nDCG_Full
+RALIC 1 (Objectives),"Proposed IFS (Linear, pi=0.25)",0.772,0.913,0.945,0.979,0.979
+RALIC 1 (Objectives),Crisp Ablation (pi=0.00),0.7,0.836,0.884,0.929,0.929
+RALIC 1 (Objectives),BPR (Supervised Pairwise Rank),0.463,0.757,0.856,0.926,0.926
+RALIC 1 (Objectives),SVD Matrix Factorization,0.525,0.913,0.9,0.958,0.958
+RALIC 1 (Objectives),Item Mean Heuristic,0.352,0.577,0.74,0.829,0.829
+RALIC 2 (Requirements),"Proposed IFS (Linear, pi=0.25)",0.561,0.862,0.923,0.936,0.936
+RALIC 2 (Requirements),Crisp Ablation (pi=0.00),0.487,0.854,0.915,0.928,0.928
+RALIC 2 (Requirements),BPR (Supervised Pairwise Rank),0.214,0.81,0.897,0.905,0.905
+RALIC 2 (Requirements),SVD Matrix Factorization,0.003,0.778,0.87,0.874,0.874
+RALIC 2 (Requirements),Item Mean Heuristic,0.101,0.815,0.882,0.885,0.885
+RALIC 3 (Specific Reqs),"Proposed IFS (Linear, pi=0.25)",0.494,0.899,0.926,0.928,0.928
+RALIC 3 (Specific Reqs),Crisp Ablation (pi=0.00),0.426,0.872,0.914,0.921,0.921
+RALIC 3 (Specific Reqs),BPR (Supervised Pairwise Rank),0.656,0.941,0.955,0.955,0.955
+RALIC 3 (Specific Reqs),SVD Matrix Factorization,0.49,0.898,0.937,0.939,0.939
+RALIC 3 (Specific Reqs),Item Mean Heuristic,0.251,0.877,0.917,0.919,0.919
+Pharmacy (42x101),"Proposed IFS (Linear, pi=0.20)",0.791,0.935,0.937,0.941,0.974
+Pharmacy (42x101),BPR (Supervised Pairwise Rank),0.761,0.935,0.935,0.907,0.97
+Pharmacy (42x101),SVD Matrix Factorization,0.718,0.878,0.865,0.898,0.958
+IES Multi-Criteria (5x192x3),"Proposed IFS (Linear, pi=0.20)",0.994,1.0,1.0,1.0,1.0
+IES Multi-Criteria (5x192x3),BPR (Supervised Pairwise Rank),0.977,1.0,1.0,1.0,0.998
+IES Multi-Criteria (5x192x3),SVD Matrix Factorization,0.991,1.0,1.0,0.999,0.999
+MS Word Multi-Criteria (4x50x2),"Proposed IFS (Linear, pi=0.20)",0.962,0.999,0.992,0.997,0.997
+MS Word Multi-Criteria (4x50x2),BPR (Supervised Pairwise Rank),0.954,0.998,0.991,0.997,0.997
+MS Word Multi-Criteria (4x50x2),SVD Matrix Factorization,0.937,0.987,0.99,0.995,0.995

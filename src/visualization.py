@@ -8,6 +8,7 @@ preference space into a 2D visual map.
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.spatial import ConvexHull
 from sklearn.manifold import MDS
 from src.similarity import calculate_h_max_distance
 
@@ -33,7 +34,7 @@ def plot_heatmap(matrix, title="Similarity Matrix", filename=None):
         cmap="Blues",
         linewidths=0.5,
         linecolor='white',
-        cbar_kws={'label': ''},
+        cbar_kws={'label': 'H-max Similarity'},
         vmin=0,
         vmax=1
     )
@@ -44,7 +45,7 @@ def plot_heatmap(matrix, title="Similarity Matrix", filename=None):
     plt.tight_layout()
 
     if filename:
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.savefig(filename, dpi=600, bbox_inches='tight')
 
     plt.show()
 
@@ -82,43 +83,60 @@ def plot_stakeholder_map(dist_matrix, core_list, isolated_list, gr_series, df_if
     mds = MDS(n_components=2, metric='precomputed', random_state=100, n_init=4, init='random')
     coords = mds.fit_transform(aug_dist)
 
-    plt.figure(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(9, 6.5))
 
-    # Render the spatial position of individual stakeholders
-    for i, label in enumerate(st_list):
-        x, y = coords[i]
+    core_indices = [i for i, label in enumerate(st_list) if label in core_list]
+    iso_indices = [i for i, label in enumerate(st_list) if label in isolated_list]
 
-        # Differentiate markers based on SNN clustering classification
-        if label in core_list:
-            color = '#4682B4'  # SteelBlue
-            size = 75  # Small circle for core
+    # Plot shaded Convex Hull around Core Stakeholders if >= 3 core points exist
+    if len(core_indices) >= 3:
+        core_pts = coords[core_indices]
+        try:
+            hull = ConvexHull(core_pts)
+            hull_pts = core_pts[hull.vertices]
+            ax.fill(hull_pts[:, 0], hull_pts[:, 1], color='#4682B4', alpha=0.30,
+                    edgecolor='#4682B4', linestyle='--', linewidth=1.2,
+                    label='Core Consensus Region')
+        except Exception:
+            pass
 
-            # Plot circle but DO NOT add a text label
-            plt.scatter(x, y, c=color, s=size, alpha=1.0)
-            # final_label = f"{label}_core"
-        else:
-            color = '#E35F62'  # Reddish
-            size = 150  # Medium circle for isolated
-            final_label = f"{label}_isolated"
+    # Plot Core Stakeholders
+    if core_indices:
+        core_pts = coords[core_indices]
+        ax.scatter(core_pts[:, 0], core_pts[:, 1], c='#4682B4', s=90, alpha=0.9,
+                   edgecolors='white', linewidth=0.7, label=f'Core Stakeholders (n={len(core_indices)})')
+        # Label core points only on small running-example maps
+        if n <= 10:
+            for idx in core_indices:
+                ax.annotate(st_list[idx], (coords[idx, 0], coords[idx, 1]),
+                            xytext=(6, 4), textcoords='offset points', fontsize=9.5, color='#2b4c6f')
 
-            # Plot circle AND add the text label
-            plt.scatter(x, y, c=color, s=size, alpha=1.0)
-            plt.text(x + 0.02, y, final_label, fontsize=9, color='black', verticalalignment='center')
+    # Plot Isolated Stakeholders
+    if iso_indices:
+        iso_pts = coords[iso_indices]
+        ax.scatter(iso_pts[:, 0], iso_pts[:, 1], c='#D9534F', s=90, marker='D', alpha=0.9,
+                   edgecolors='black', linewidth=0.8, label=f'Isolated Stakeholders (n={len(iso_indices)})')
+        for idx in iso_indices:
+            ax.annotate(st_list[idx], (coords[idx, 0], coords[idx, 1]),
+                        xytext=(7, -3), textcoords='offset points',
+                        fontsize=9, fontweight='medium', color='#8a1f1c')
 
-    # Render the target Group Recommendation (GR) acting as the consensus focal point
+    # Plot Group Recommendation (GR)
     gr_x, gr_y = coords[n]
-    plt.scatter(gr_x, gr_y, c='#FF9F40', s=250, alpha=1.0)
-    plt.text(gr_x + 0.02, gr_y, "Group_Recommendation", fontsize=10, fontweight='bold', color='black')
+    ax.scatter(gr_x, gr_y, c='#FF9F40', s=180, marker='*', edgecolors='black',
+               linewidth=1.1, zorder=5, label='Group Recommendation (GR)')
+    ax.annotate("Group Recommendation", (gr_x, gr_y), xytext=(8, 5),
+                textcoords='offset points', fontsize=10, fontweight='bold', color='black')
 
-    plt.title("Stakeholder Preference Map (MDS)", fontsize=14, fontweight='bold')
-
-    # Remove quantitative axes to emphasize relative spatial grouping and distance
-    plt.xticks([])
-    plt.yticks([])
-    plt.box(True)
+    ax.set_title("Stakeholder Preference & Consensus Map (MDS Projection)",
+                 fontsize=13, fontweight='bold', pad=12)
+    ax.set_xlabel("MDS Dimension 1 (H-max Distance Projection)", fontsize=10.5)
+    ax.set_ylabel("MDS Dimension 2 (H-max Distance Projection)", fontsize=10.5)
+    ax.legend(loc='best', frameon=True, facecolor='white', framealpha=0.95, fontsize=9.5)
+    ax.grid(True, linestyle=':', alpha=0.5)
     plt.tight_layout()
 
     if filename:
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.savefig(filename, dpi=600, bbox_inches='tight')
 
     plt.show()
